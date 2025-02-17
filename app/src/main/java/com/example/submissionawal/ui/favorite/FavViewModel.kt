@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.submissionawal.data.EventsRepository
 import com.example.submissionawal.data.local.entity.EventsEntity
+import com.example.submissionawal.data.local.entity.FavEntity
 import kotlinx.coroutines.launch
 
 class FavViewModel(private val eventsRepository: EventsRepository) : ViewModel() {
@@ -14,17 +15,31 @@ class FavViewModel(private val eventsRepository: EventsRepository) : ViewModel()
             return eventsRepository.getFavId(id)
     }
 
-
     fun getFavoritedEvents() = eventsRepository.getFavoritedEvents()
 
-     fun saveEvents(events: EventsEntity) {
-         viewModelScope.launch {
-             eventsRepository.setFavoritedEvents(events, true)
-         }
+    fun insertFavoriteEvent(events: FavEntity){
+        viewModelScope.launch {
+            eventsRepository.insertFavoritedEvent(events)
+        }
     }
-     fun deleteEvents(events: EventsEntity) {
-         viewModelScope.launch {
-             eventsRepository.setFavoritedEvents(events, false)
-         }
+    fun deleteFavoritedEvent(title:String){
+        viewModelScope.launch {
+            eventsRepository.deleteFavoritedEvent(title)
+        }
     }
+
+//     fun saveEvents(events: EventsEntity) {
+//         viewModelScope.launch {
+//             eventsRepository.setFavoritedEvents(events, true)
+//         }
+//    }
+//     fun deleteEvents(events: EventsEntity) {
+//         viewModelScope.launch {
+//             eventsRepository.setFavoritedEvents(events, false)
+//         }
+//    }
+//
+//    fun isFavorited(events: String): String {
+//        return eventsRepository.isFavorited(events)
+//    }
 }

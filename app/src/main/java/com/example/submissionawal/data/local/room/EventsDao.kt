@@ -20,7 +20,6 @@ interface EventsDao {
     @Query("SELECT * FROM events WHERE id = :id")
     fun getFavId(id: String): LiveData<List<EventsEntity>>
 
-
     @Query("SELECT EXISTS(SELECT * FROM events WHERE title = :title AND favorited = 1)")
     fun isFavorited(title: String): String
 
@@ -30,10 +29,12 @@ interface EventsDao {
     @Update
     suspend fun updateEvents(events: EventsEntity)
 
+    @Query("UPDATE events SET favorited= :fav WHERE title = :title")
+    suspend fun updateFav(fav:Boolean,title: String)
+
     @Query("DELETE FROM events WHERE favorited = 0")
     suspend fun deleteAll()
 
-    @Query("SELECT EXISTS(SELECT * FROM events WHERE title = :title AND favorited = 1)")
-    suspend fun isEventsFavorited(title: String): Boolean
-
+    @Query("SELECT EXISTS(SELECT * FROM favorite WHERE id = :id)")
+    suspend fun isEventsFavorited(id: String): Boolean
 }

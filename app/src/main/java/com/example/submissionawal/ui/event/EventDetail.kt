@@ -12,6 +12,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -22,7 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.submissionawal.MainActivity
 import com.example.submissionawal.MainViewModel
 import com.example.submissionawal.R
-import com.example.submissionawal.data.local.entity.EventsEntity
+import com.example.submissionawal.data.local.entity.FavEntity
 import com.example.submissionawal.data.remote.response.ListEventsItem
 import com.example.submissionawal.databinding.ActivityEventDetailBinding
 import com.example.submissionawal.ui.favorite.FavViewModel
@@ -89,6 +90,15 @@ class EventDetail : AppCompatActivity(), View.OnClickListener {
     private fun getfavorite() {
         favoriteViewModel = obtainViewModel(this)
         favoriteViewModel.getFavId(dataEvent?.id.toString()).observe(this){event->
+//            if (event.toString()=="[]"){
+//                Log.e("database", event.toString())
+//                favorited= false
+//                binding.ivFavorite.setImageDrawable(ContextCompat.getDrawable(binding.ivFavorite.context, R.drawable.baseline_favorite_border_24))
+//            }else{
+//                Log.e("database", "")
+//                favorited= true
+//                binding.ivFavorite.setImageDrawable(ContextCompat.getDrawable(binding.ivFavorite.context, R.drawable.baseline_favorite_24))
+//            }
             favorited= event[0].isFavorited
             if (event[0].isFavorited){
                 binding.ivFavorite.setImageDrawable(ContextCompat.getDrawable(binding.ivFavorite.context, R.drawable.baseline_favorite_24))
@@ -162,26 +172,23 @@ class EventDetail : AppCompatActivity(), View.OnClickListener {
             }
             R.id.iv_favorite -> {
                 Log.e("testinga",favorited.toString())
-                val eventsEntity = EventsEntity(
+                val favEntity = FavEntity(
                 dataEvent?.id.toString(),
                 dataEvent?.name.toString(),
-                dataEvent?.category.toString(),
-                dataEvent?.summary.toString(),
-                dataEvent?.imageLogo,
-                dataEvent?.beginTime.toString(),
-                dataEvent?.quota.toString(),
-                dataEvent?.ownerName.toString(),
-                dataEvent?.registrants.toString(),
-                dataEvent?.mediaCover.toString(),
-                dataEvent?.description.toString(),
-                dataEvent?.link.toString(),
-                    favorited
                 )
+                var toast = ""
                 if (favorited){
-                    favoriteViewModel.deleteEvents(eventsEntity)
+                    favoriteViewModel.deleteFavoritedEvent(dataEvent!!.name.toString())
+                    toast = "Remove favorite"
                 }else{
-                    favoriteViewModel.saveEvents(eventsEntity)
+                    toast = "Added to favorite"
+                    favoriteViewModel.insertFavoriteEvent(favEntity)
                 }
+                Toast.makeText(
+                    applicationContext,
+                    toast ,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }

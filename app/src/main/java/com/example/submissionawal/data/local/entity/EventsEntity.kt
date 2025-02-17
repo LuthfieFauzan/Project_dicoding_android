@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "events")
 class EventsEntity(
-
     @field:ColumnInfo(name = "id")
     @PrimaryKey
     var id: String,
@@ -47,3 +46,4 @@ class EventsEntity(
     @field:ColumnInfo(name = "favorited")
     var isFavorited: Boolean
 )
+

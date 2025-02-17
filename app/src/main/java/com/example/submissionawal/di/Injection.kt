@@ -10,6 +10,7 @@ object Injection {
         val apiService = ApiConfig.getApiService()
         val database = EventsDatabase.getInstance(context)
         val dao = database.eventsDao()
-        return EventsRepository.getInstance(apiService, dao)
+        val dao2 = database.favDao()
+        return EventsRepository.getInstance(apiService, dao,dao2)
     }
 }

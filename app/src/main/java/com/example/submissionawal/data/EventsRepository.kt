@@ -5,7 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.liveData
 import androidx.lifecycle.map
 import com.example.submissionawal.data.local.entity.EventsEntity
+import com.example.submissionawal.data.local.entity.FavEntity
 import com.example.submissionawal.data.local.room.EventsDao
+import com.example.submissionawal.data.local.room.FavDao
 import com.example.submissionawal.data.remote.retrofit.ApiService
 
 
@@ -13,6 +15,7 @@ import com.example.submissionawal.data.remote.retrofit.ApiService
 class EventsRepository private constructor(
     private val apiService: ApiService,
     private val eventsDao: EventsDao,
+    private val favDao: FavDao,
 ) {
 //    private val result = MediatorLiveData<Result<List<EventsEntity>>>()
     fun getFavoritedEvents(): LiveData<List<EventsEntity>> {
@@ -21,17 +24,24 @@ class EventsRepository private constructor(
      fun getFavId(id:String): LiveData<List<EventsEntity>> {
         return eventsDao.getFavId(id)
     }
-    suspend fun setFavoritedEvents(events: EventsEntity, bookmarkState: Boolean) {
-        events.isFavorited = bookmarkState
-        eventsDao.updateEvents(events)
+
+    suspend fun insertFavoritedEvent(events: FavEntity) {
+        eventsDao.updateFav(true,events.title)
+        favDao.insertFav(events)
     }
+
+    suspend fun deleteFavoritedEvent(title:String) {
+        eventsDao.updateFav(false,title)
+        favDao.deleteFavoriteEvent(title)
+    }
+
     fun getHeadlineEvents(): LiveData<Result<List<EventsEntity>>> = liveData {
         emit(Result.Loading)
         try {
             val response = apiService.getAllEvent()
             val events = response.listEvents
             val eventsList = events!!.map { event ->
-                val isFavorited = eventsDao.isEventsFavorited(event?.name.toString())
+                val isFavorited = eventsDao.isEventsFavorited(event?.id.toString())
                 EventsEntity(
                                 event?.id.toString(),
                                 event?.name.toString(),
@@ -65,9 +75,10 @@ class EventsRepository private constructor(
         fun getInstance(
             apiService: ApiService,
             eventsDao: EventsDao,
+            favDao: FavDao
         ): EventsRepository =
             instance ?: synchronized(this) {
-                instance ?: EventsRepository(apiService, eventsDao)
+                instance ?: EventsRepository(apiService, eventsDao,favDao)
             }.also { instance = it }
     }
 }

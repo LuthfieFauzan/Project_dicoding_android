@@ -44,6 +44,7 @@ class FavoriteFragment : Fragment() {
         }
         val adapter = EventAdapter()
         viewModel.getFavoritedEvents().observe(viewLifecycleOwner) { users ->
+
             val items = arrayListOf<ListEventsItem>()
             users.map {
                 val item = ListEventsItem(id = Integer.parseInt(it.id),
@@ -70,11 +71,6 @@ class FavoriteFragment : Fragment() {
                 binding.tvEmptyFavorite.visibility = View.GONE
             }
         }
-
-
-
-
-
 
         return root
 }
